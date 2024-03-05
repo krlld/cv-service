@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -27,6 +28,15 @@ public class DirectionServiceImpl implements DirectionService {
     public Page<DirectionDto> findAll(String query, Pageable pageable) {
         return directionRepository.findAllByNameContainsIgnoreCase(query, pageable)
                 .map(directionMapper::toDirectionDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DirectionDto> findAllByIds(List<Long> ids) {
+        return directionRepository.findAllById(ids)
+                .stream()
+                .map(directionMapper::toDirectionDto)
+                .toList();
     }
 
     @Override
