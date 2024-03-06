@@ -21,15 +21,25 @@ CREATE TABLE test_directions
     FOREIGN KEY (direction_id) REFERENCES directions (id)
 );
 
+CREATE TABLE files_info
+(
+    id   BIGSERIAL PRIMARY KEY,
+    name TEXT   NOT NULL,
+    size BIGINT NOT NULL,
+    body BYTEA  NOT NULL
+);
+
 CREATE TABLE candidates
 (
-    id          BIGSERIAL PRIMARY KEY,
-    second_name TEXT  NOT NULL,
-    first_name  TEXT  NOT NULL,
-    patronymic  TEXT  NOT NULL,
-    photo       BYTEA NOT NULL,
-    description TEXT  NOT NULL,
-    cv_file     BYTEA NOT NULL
+    id            BIGSERIAL PRIMARY KEY,
+    second_name   TEXT   NOT NULL,
+    first_name    TEXT   NOT NULL,
+    patronymic    TEXT   NOT NULL,
+    photo_file_id BIGINT NOT NULL,
+    description   TEXT   NOT NULL,
+    cv_file_id    BIGINT NOT NULL,
+    FOREIGN KEY (photo_file_id) REFERENCES files_info (id),
+    FOREIGN KEY (cv_file_id) REFERENCES files_info (id)
 );
 
 CREATE TABLE candidate_directions
