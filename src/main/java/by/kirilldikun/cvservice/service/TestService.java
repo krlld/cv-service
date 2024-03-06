@@ -8,5 +8,7 @@ public interface TestService {
 
     Page<TestDto> findAll(String query, Pageable pageable);
 
+    TestDto findById(Long id);
+
     TestDto save(TestDto testDto);
 }

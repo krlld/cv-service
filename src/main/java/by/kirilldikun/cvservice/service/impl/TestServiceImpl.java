@@ -35,6 +35,14 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public TestDto findById(Long id) {
+        return testRepository.findById(id)
+                .map(testMapper::toTestDto)
+                .orElseThrow(() -> new NotFoundException("Test with id: %d not found".formatted(id)));
+    }
+
+    @Override
     @Transactional
     public TestDto save(TestDto testDto) {
         List<DirectionDto> directionDtos = directionService.findAllByIds(testDto.getDirectionIds());
