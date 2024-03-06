@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
-    public ErrorResponse handleProjectAlreadyExistsException(NotFoundException e) {
+    public ErrorResponse handleNotFoundException(NotFoundException e) {
         log.warn(e.getMessage());
         return new ErrorResponse("RESOURCE_NOT_FOUND", e.getMessage());
     }
