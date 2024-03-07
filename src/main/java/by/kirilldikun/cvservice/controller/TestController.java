@@ -3,6 +3,9 @@ package by.kirilldikun.cvservice.controller;
 import by.kirilldikun.cvservice.dto.TestDto;
 import by.kirilldikun.cvservice.service.TestService;
 import by.kirilldikun.cvservice.util.OffsetLimitPageable;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -22,29 +25,36 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Test controller", description = "Manages tests")
 public class TestController {
 
     private final TestService testService;
 
     @GetMapping("/tests")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "find all", description = "Gets all tests according to the specified parameters")
     public Page<TestDto> findAll(
-            @RequestParam(defaultValue = "") String query,
-            @RequestParam(defaultValue = "0") @Min(0) Long offset,
-            @RequestParam(defaultValue = "10") @Range(min = 1, max = 100) Integer limit) {
+            @Parameter(description = "Query for search") @RequestParam(defaultValue = "") String query,
+            @Parameter(description = "Offset for pagination") @RequestParam(defaultValue = "0") @Min(0) Long offset,
+            @Parameter(description = "Limit for pagination") @RequestParam(defaultValue = "10")
+            @Range(min = 1, max = 100) Integer limit) {
         OffsetLimitPageable offsetLimitPageable = OffsetLimitPageable.of(offset, limit);
         return testService.findAll(query, offsetLimitPageable);
     }
 
     @PostMapping("/tests")
     @ResponseStatus(HttpStatus.CREATED)
-    public TestDto save(@Valid @RequestBody TestDto testDto) {
+    @Operation(summary = "save test", description = "Save test and return it")
+    public TestDto save(@Parameter(description = "Test data") @Valid @RequestBody TestDto testDto) {
         return testService.save(testDto);
     }
 
     @PutMapping("/tests/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TestDto update(@PathVariable Long id, @Valid @RequestBody TestDto testDto) {
+    @Operation(summary = "update test", description = "Update test and return it")
+    public TestDto update(
+            @Parameter(description = "Test id") @PathVariable Long id,
+            @Parameter(description = "Test data") @Valid @RequestBody TestDto testDto) {
         testDto.setId(id);
         return testService.save(testDto);
     }

@@ -4,6 +4,9 @@ import by.kirilldikun.cvservice.dto.CandidateDto;
 import by.kirilldikun.cvservice.dto.FileInfoDto;
 import by.kirilldikun.cvservice.service.CandidateService;
 import by.kirilldikun.cvservice.util.OffsetLimitPageable;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -32,22 +35,26 @@ import java.nio.charset.StandardCharsets;
 @Validated
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Candidate controller", description = "Manages candidates")
 public class CandidateController {
 
     private final CandidateService candidateService;
 
     @GetMapping("/candidates")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "find all", description = "Gets all candidates according to the specified parameters")
     public Page<CandidateDto> findAll(
-            @RequestParam(defaultValue = "") String query,
-            @RequestParam(defaultValue = "0") @Min(0) Long offset,
-            @RequestParam(defaultValue = "10") @Range(min = 1, max = 100) Integer limit) {
+            @Parameter(description = "Query for search") @RequestParam(defaultValue = "") String query,
+            @Parameter(description = "Offset for pagination") @RequestParam(defaultValue = "0") @Min(0) Long offset,
+            @Parameter(description = "Limit for pagination") @RequestParam(defaultValue = "10")
+            @Range(min = 1, max = 100) Integer limit) {
         OffsetLimitPageable offsetLimitPageable = OffsetLimitPageable.of(offset, limit);
         return candidateService.findAll(query, offsetLimitPageable);
     }
 
     @GetMapping(value = "/candidates/{id}/photo", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<Resource> downloadPhoto(@PathVariable Long id) {
+    @Operation(summary = "download photo", description = "Download photo by candidate id")
+    public ResponseEntity<Resource> downloadPhoto(@Parameter(description = "Candidate id") @PathVariable Long id) {
         FileInfoDto fileInfoDto = candidateService.findPhotoByCandidateId(id);
         String encodedFilename = UriUtils.encode(fileInfoDto.getName(), StandardCharsets.UTF_8);
         Resource resource = new ByteArrayResource(fileInfoDto.getBody());
@@ -57,7 +64,8 @@ public class CandidateController {
     }
 
     @GetMapping(value = "/candidates/{id}/cv", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<Resource> downloadCv(@PathVariable Long id) {
+    @Operation(summary = "download cv", description = "Download cv by candidate id")
+    public ResponseEntity<Resource> downloadCv(@Parameter(description = "Candidate id") @PathVariable Long id) {
         FileInfoDto fileInfoDto = candidateService.findCvByCandidateId(id);
         Resource resource = new ByteArrayResource(fileInfoDto.getBody());
         return ResponseEntity.ok()
@@ -67,10 +75,11 @@ public class CandidateController {
 
     @PostMapping("/candidates")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "save candidate", description = "Save candidate and return it")
     public CandidateDto save(
-            @RequestPart MultipartFile photo,
-            @RequestPart MultipartFile cv,
-            @Valid CandidateDto candidateDto) {
+            @Parameter(description = "Candidate photo") @RequestPart MultipartFile photo,
+            @Parameter(description = "Candidate cv") @RequestPart MultipartFile cv,
+            @Parameter(description = "Candidate data") @Valid CandidateDto candidateDto) {
         candidateDto.setPhotoFile(photo);
         candidateDto.setCvFile(cv);
         return candidateService.save(candidateDto);
@@ -78,11 +87,12 @@ public class CandidateController {
 
     @PutMapping("/candidates/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "update candidate", description = "Update candidate and return it")
     public CandidateDto update(
-            @PathVariable Long id,
-            @RequestPart MultipartFile photo,
-            @RequestPart MultipartFile cv,
-            @Valid CandidateDto candidateDto) {
+            @Parameter(description = "Candidate id") @PathVariable Long id,
+            @Parameter(description = "Candidate photo") @RequestPart MultipartFile photo,
+            @Parameter(description = "Candidate cv") @RequestPart MultipartFile cv,
+            @Parameter(description = "Candidate data") @Valid CandidateDto candidateDto) {
         candidateDto.setId(id);
         candidateDto.setPhotoFile(photo);
         candidateDto.setCvFile(cv);
