@@ -1,6 +1,7 @@
 package by.kirilldikun.cvservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,12 +13,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(description = "Error response")
 public class ErrorResponse {
 
+    @Schema(description = "Error code", example = "RESOURCE_NOT_FOUND")
     private String code;
 
+    @Schema(description = "Error message", example = "Direction with id: 1 not found")
     private String message;
 
+    @Schema(description = "Field errors")
     private List<Field> fields;
 
     public ErrorResponse(String code, String message) {
@@ -30,8 +35,10 @@ public class ErrorResponse {
     @NoArgsConstructor
     public static class Field {
 
+        @Schema(description = "Field name")
         private String name;
 
+        @Schema(description = "Error message")
         private String message;
     }
 
